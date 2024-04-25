@@ -1,24 +1,29 @@
 #' @name L1centLOC
-#' @title Local L1 Centrality
+#' @aliases L1presLOC
+#' @title Local L1 Centrality/Prestige
 #'
 #' @description
 #' Computes local \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
-#' centrality at each \code{alpha} level for every vertex.
+#' centrality or prestige at each \code{alpha} level for every vertex. For
+#' undirected graphs, the two measures are identical.
 #'
 #' @note
-#' The function is valid only for undirected and connected graphs.
+#' The function is valid only for connected graphs. If the graph is directed, it
+#' must be strongly connected.
 #'
 #' @details
-#' Suppose that the given graph has \eqn{n} vertices. We choose about
-#' \eqn{n\alpha} vertices
-#' (\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality-based
-#' neighborhood) for each vertex (see [L1centNB()]), and compute the
-#' \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality of the vertex
-#' conditioned on these vertices, i.e., derive the
-#' \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality locally.
+#' Suppose that the given graph has \ifelse{html}{\out{<i>n</i>}}{\eqn{n}}
+#' vertices. We choose about \eqn{n\alpha} vertices
+#' (\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality- or
+#' prestige-based neighborhood) for each vertex (see [L1centNB()]), and compute
+#' the \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality or
+#' prestige of the vertex conditioned on these vertices, i.e., derive the
+#' \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality or prestige
+#' locally. For details, refer to Kang and Oh (2024a) for undirected graphs, and
+#' Kang and Oh (2024b) for directed graphs.
 #'
 #' @inheritParams L1cent
-#' @param alpha A number or a numeric vector of multiscale parameters. Values
+#' @param alpha A number or a numeric vector of locality levels. Values
 #'   must be between 0 and 1.
 #' @return A list of numeric vectors. The length of the list is equivalent to
 #'   the length of \code{alpha}, and the names of the list are the values of
@@ -26,13 +31,15 @@
 #'   is equivalent to the number of vertices in the graph \code{g}.
 #'   Specifically, the \code{i}th component of the list is a vector of local
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality at level
-#'   \code{alpha[i]} for each vertex.
+#'   \code{alpha[i]} for each vertex (if \code{mode = "centrality"}) or local
+#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prestige at level
+#'   \code{alpha[i]} for each vertex (if \code{mode = "prestige"}).
 #'
 #' @export
 #' @seealso [L1cent()] for
-#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality,
+#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality/prestige,
 #'   [L1centNB()] for \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
-#'   centrality-based neighborhood.
+#'   centrality/prestige-based neighborhood.
 #' @examples
 #' weight <- igraph::V(MCUmovie)$worldwidegross
 #' MCUmovie_cent <- L1cent(MCUmovie, eta = weight)
@@ -43,28 +50,33 @@
 #' graphics::text(MCUmovie_cent, MCUmovie_loc_cent[[1]], igraph::V(MCUmovie)$name)
 #' @references S. Kang and H.-S. Oh. On a notion of graph centrality based on
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-#'   Technical Report, 2023.
-L1centLOC <- function(g, eta, alpha) UseMethod("L1centLOC")
+#'   \emph{arXiv preprint arXiv:2404.13233}, 2024a.
+#'
+#'   S. Kang and H.-S. Oh.
+#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prominence measures
+#'   for directed graphs. Manuscript. 2024b.
+L1centLOC <- function(g, eta, alpha, mode) UseMethod("L1centLOC")
 
 #' @name L1centLOC
 #' @exportS3Method L1centLOC igraph
-L1centLOC.igraph <- function(g, eta = NULL, alpha){
-  validate_igraph(g)
+L1centLOC.igraph <- function(g, eta = NULL, alpha, mode = c("centrality", "prestige")){
+  validate_igraph(g, checkdir = FALSE)
 
-  D <- igraph::distances(g)
-  L1centLOC.matrix(D, eta, alpha)
+  D <- igraph::distances(g, mode = "out")
+  L1centLOC.matrix(D, eta, alpha, mode)
 }
 
 #' @name L1centLOC
 #' @exportS3Method L1centLOC matrix
-L1centLOC.matrix <- function(g, eta = NULL, alpha){
+L1centLOC.matrix <- function(g, eta = NULL, alpha, mode = c("centrality", "prestige")){
   if(is.null(eta)) eta <- rep(1,ncol(g))
-  validate_matrix(g, eta)
+  validate_matrix(g, eta, checkdir = FALSE)
   if(!all(alpha >= 0 & alpha <= 1))
     stop("alpha is not in the correct range: [0,1]")
+  mode <- match.arg(tolower(mode), choices = c("centrality", "prestige"))
 
   if(identical(alpha, 1) | identical(alpha, 1L)){
-    loc.cent <- list(L1cent(g, eta))
+    loc.cent <- list(L1cent(g, eta, mode))
     names(loc.cent) <- alpha
     return(loc.cent)
   }
@@ -72,9 +84,11 @@ L1centLOC.matrix <- function(g, eta = NULL, alpha){
   if(is.null(rownames(g))) rownames(g) <- colnames(g) <- 1:ncol(g)
 
   n <- ncol(g)
+  sg <- ifelse(isSymmetric.matrix(g), 1,
+               min((g/t(g))[upper.tri(g) | lower.tri(g)]))
   m <- ceiling(n*alpha)
   label <- colnames(g)
-  NB <- L1centNB(g)
+  NB <- L1centNB(g, eta = eta, mode)
   loc.cent <- vector("list", length = length(alpha))
   names(loc.cent) <- alpha
   for (i in seq_along(alpha)) {
@@ -84,12 +98,12 @@ L1centLOC.matrix <- function(g, eta = NULL, alpha){
     loc.cent[[i]] <-
       sapply(1:length(nb.index), function(j){
         index <- which(rownames(g.new <- g[nb.index[[j]], nb.index[[j]]]) == names(nb.index)[j])
+        if(identical(mode, "centrality")) g.new <- t(g.new)
         closenessinv <- colSums((eta.new <- eta[nb.index[[j]]])*g.new)
-        1 - max((closenessinv[index] - closenessinv)/(g.new + diag(Inf,nrow(g.new)))[index,]/sum(eta.new))
+        1 - sg*max((closenessinv[index] - closenessinv)/(g.new + diag(Inf,nrow(g.new)))[index,]/sum(eta.new))
       })
     names(loc.cent[[i]]) <- rownames(g)
   }
   return(loc.cent)
 }
-
 

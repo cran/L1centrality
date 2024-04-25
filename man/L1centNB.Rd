@@ -2,26 +2,42 @@
 % Please edit documentation in R/L1centNB.R
 \name{L1centNB}
 \alias{L1centNB}
+\alias{L1presNB}
 \alias{L1centNB.igraph}
 \alias{L1centNB.matrix}
-\title{L1 Centrality-Based Neighborhood}
+\title{L1 Centrality/Prestige-Based Neighborhood}
 \usage{
-L1centNB(g, eta)
+L1centNB(g, eta, mode)
 
-\method{L1centNB}{igraph}(g, eta = NULL)
+\method{L1centNB}{igraph}(g, eta = NULL, mode = c("centrality", "prestige"))
 
-\method{L1centNB}{matrix}(g, eta = NULL)
+\method{L1centNB}{matrix}(g, eta = NULL, mode = c("centrality", "prestige"))
 }
 \arguments{
 \item{g}{An \code{igraph} graph object or a distance matrix. The graph must
-be undirected and connected. Equivalently, the distance matrix must be
-symmetric, and all entries must be finite.}
+be connected. For a directed graph, it must be strongly connected.
+Equivalently, all entries of the distance matrix must be finite. Here, the
+\ifelse{html}{\out{(<i>i,j</i>)}}{\eqn{(i,j)}} component of the distance
+matrix is the geodesic distance from the
+\ifelse{html}{\out{<i>i</i>}}{\eqn{i}}th vertex to the
+\ifelse{html}{\out{<i>j</i>}}{\eqn{j}}th vertex.}
 
 \item{eta}{An optional nonnegative multiplicity (weight) vector for (vertex)
 weighted networks. The sum of its components must be positive. If set to
 \code{NULL} (the default), all vertices will have the same positive weight
 (multiplicity), i.e., \code{g} is treated as a vertex unweighted graph. The
 length of the \code{eta} must be equivalent to the number of vertices.}
+
+\item{mode}{A character string. For an undirected graph, either choice gives
+the same result.
+\itemize{
+\item \code{centrality} (the default): \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
+centrality (prominence of each vertex in terms of \emph{making} a choice) is
+used for analysis.
+\item \code{prestige}: \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
+prestige (prominence of each vertex in terms of \emph{receiving} a choice)
+is used for analysis
+}}
 }
 \value{
 A list of numeric vectors. The length of the list is
@@ -30,17 +46,22 @@ list are vertex names. Each component of the list is a numeric vector whose
 length is equivalent to the number of vertices in the graph \code{g}.
 Specifically, the \code{i}th component of the list is a vector of the
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality of each
-vertex, for the symmetrized graph \code{g} w.r.t. the \code{i}th vertex.
+vertex, for the modified graph \code{g}
+w.r.t. the \code{i}th vertex (if \code{mode = "centrality"}) or the
+\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prestige of each
+vertex, for the modified graph \code{g}
+w.r.t. the \code{i}th vertex (if \code{mode = "prestige"}).
 }
 \description{
 Derives \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
-centrality-based neighborhood of each vertex.
+centrality- or prestige-based neighborhood of each vertex. For undirected graphs, the
+two neighborhood are identical.
 }
 \details{
-If a graph is symmetrized (in a way defined in Kang and Oh (2023))
+For an undirected graph, if the graph is symmetrized (in a way defined in Kang and Oh (2024a))
 w.r.t. a vertex \ifelse{html}{\out{<i>v</i>}}{\eqn{v}}, vertex
 \ifelse{html}{\out{<i>v</i>}}{\eqn{v}} becomes the graph median (Kang and Oh,
-2023), i.e., \ifelse{html}{\out{<i>v</i>}}{\eqn{v}} has
+2024a), i.e., \ifelse{html}{\out{<i>v</i>}}{\eqn{v}} has
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality 1. Based on
 this property, we define the
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality-based
@@ -48,9 +69,22 @@ neighborhood of vertex \ifelse{html}{\out{<i>v</i>}}{\eqn{v}} as vertices
 that have large \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
 centrality on the symmetrized graph w.r.t. vertex
 \ifelse{html}{\out{<i>v</i>}}{\eqn{v}}.
+
+For a directed graph, a vertex of interest, say
+\ifelse{html}{\out{<i>v</i>}}{\eqn{v}}, is made to a centrality and prestige
+median vertex by the procedure described in Kang and Oh (2024b). We call the
+resulting graph as the modified graph w.r.t.
+\ifelse{html}{\out{<i>v</i>}}{\eqn{v}}.
+\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
+centrality(prestige)-based neighborhood of vertex
+\ifelse{html}{\out{<i>v</i>}}{\eqn{v}} is a set of vertices that have large
+\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality(prestige)
+on the modified graph w.r.t. vertex
+\ifelse{html}{\out{<i>v</i>}}{\eqn{v}}.
 }
 \note{
-The function is valid only for undirected and connected graphs.
+The function is valid only for connected graphs. If the graph is directed, it
+must be strongly connected.
 }
 \examples{
 NB <- L1centNB(MCUmovie, eta = igraph::V(MCUmovie)$worldwidegross)
@@ -60,10 +94,14 @@ utils::head(sort(NB$"Iron Man", decreasing = TRUE))
 \references{
 S. Kang and H.-S. Oh. On a notion of graph centrality based on
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-Technical Report, 2023.
+\emph{arXiv preprint arXiv:2404.13233}, 2024a.
+
+S. Kang and H.-S. Oh.
+\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prominence measures
+for directed graphs. Manuscript. 2024b.
 }
 \seealso{
 \code{\link[=L1cent]{L1cent()}} for
-\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality,
+\ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality/prestige,
 \code{\link[=L1centLOC]{L1centLOC()}} and \code{\link[=L1centEDGE]{L1centEDGE()}} internally uses \code{L1centNB()}.
 }

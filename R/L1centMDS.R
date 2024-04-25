@@ -5,7 +5,7 @@
 #' \code{L1centMDS()} and \code{plot.L1centMDS()} are used together to draw a target
 #' plot, which is a target-shaped 2D plot that aids in the visual inspection of a
 #' network using the \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
-#' centrality. See Kang and Oh (2023) for a formal definition of a target plot.
+#' centrality. See Kang and Oh (2024) for a formal definition of a target plot.
 #'
 #' @details
 #' Denoting the \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
@@ -23,7 +23,9 @@
 #' graphs. Also, \code{L1centMDS()} only considers graphs with equal vertex
 #' multiplicities.
 #'
-#' @inheritParams L1cent
+#' @param g An \code{igraph} graph object or a distance matrix. The graph must
+#'   be undirected and connected. Equivalently, the distance matrix must be
+#'   symmetric, and all entries must be finite.
 #' @param tol A numerical tolerance. The gradient descent method terminates if
 #'   the relative magnitude of the gradient falls below \code{tol} as in Kruskal
 #'   (1964b). By default set to \ifelse{html}{\out{10<sup>-5</sup>}}{\eqn{10^{-5}}}.
@@ -70,14 +72,16 @@
 #' \emph{not} radius quartiles.
 #'
 #' @export
-#' @seealso [L1cent()] for \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality,
-#'   [MASS::isoMDS()] and [stats::cmdscale()] for multidimensional scaling methods.
+#' @seealso [L1cent()] for
+#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality/prestige,
+#'   [MASS::isoMDS()] and [stats::cmdscale()] for multidimensional scaling
+#'   methods.
 #' @examples
 #' parameters <- L1centMDS(MCUmovie, verbose = FALSE)
 #' plot(parameters)
 #' @references S. Kang and H.-S. Oh. On a notion of graph centrality based on
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-#'   Technical Report, 2023.
+#'   \emph{arXiv preprint arXiv:2404.13233}, 2024.
 #'
 #'   J. B. Kruskal. Multidimensional scaling by optimizing goodness of fit to a
 #'   nonmetric hypothesis. \emph{Psychometrika}, 29(1):1--27, 1964a.
