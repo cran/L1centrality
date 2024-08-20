@@ -25,7 +25,7 @@ matrix is the geodesic distance from the
 \item{eta}{An optional nonnegative multiplicity (weight) vector for (vertex)
 weighted networks. The sum of its components must be positive. If set to
 \code{NULL} (the default), all vertices will have the same positive weight
-(multiplicity), i.e., \code{g} is treated as a vertex unweighted graph. The
+(multiplicity) of 1, i.e., \code{g} is treated as a vertex unweighted graph. The
 length of the \code{eta} must be equivalent to the number of vertices.}
 
 \item{mode}{A character string. For an undirected graph, either choice gives
@@ -36,7 +36,7 @@ centrality (prominence of each vertex in terms of \emph{making} a choice) is
 used for analysis.
 \item \code{prestige}: \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
 prestige (prominence of each vertex in terms of \emph{receiving} a choice)
-is used for analysis
+is used for analysis.
 }}
 }
 \value{
@@ -60,7 +60,7 @@ two neighborhood are identical.
 \details{
 For an undirected graph, if the graph is symmetrized (in a way defined in Kang and Oh (2024a))
 w.r.t. a vertex \ifelse{html}{\out{<i>v</i>}}{\eqn{v}}, vertex
-\ifelse{html}{\out{<i>v</i>}}{\eqn{v}} becomes the graph median (Kang and Oh,
+\ifelse{html}{\out{<i>v</i>}}{\eqn{v}} becomes the graph median (Kang and Oh
 2024a), i.e., \ifelse{html}{\out{<i>v</i>}}{\eqn{v}} has
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality 1. Based on
 this property, we define the

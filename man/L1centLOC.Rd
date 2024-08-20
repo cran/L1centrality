@@ -25,7 +25,7 @@ matrix is the geodesic distance from the
 \item{eta}{An optional nonnegative multiplicity (weight) vector for (vertex)
 weighted networks. The sum of its components must be positive. If set to
 \code{NULL} (the default), all vertices will have the same positive weight
-(multiplicity), i.e., \code{g} is treated as a vertex unweighted graph. The
+(multiplicity) of 1, i.e., \code{g} is treated as a vertex unweighted graph. The
 length of the \code{eta} must be equivalent to the number of vertices.}
 
 \item{alpha}{A number or a numeric vector of locality levels. Values
@@ -39,7 +39,7 @@ centrality (prominence of each vertex in terms of \emph{making} a choice) is
 used for analysis.
 \item \code{prestige}: \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
 prestige (prominence of each vertex in terms of \emph{receiving} a choice)
-is used for analysis
+is used for analysis.
 }}
 }
 \value{
