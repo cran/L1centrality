@@ -90,22 +90,32 @@
 #'  * `prestige`: \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
 #'  prestige (prominence of each vertex in terms of \emph{receiving} a choice)
 #'  is used for analysis.
-#' @return A numeric vector whose length is equivalent to the number of vertices
-#'   in the graph \code{g}. Each component of the vector is the
+#' @return \code{L1cent()} returns an object of class \code{L1cent}. It is a
+#'   numeric vector whose length is equivalent to the number of vertices in the
+#'   graph \code{g}. Each component of the vector is the
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality (if
 #'   \code{mode = "centrality"}) or the
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prestige (if
 #'   \code{mode = "prestige"}) of each vertex in the given graph.
 #'
+#'  `print.L1cent()` prints
+#'  \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality or
+#'  \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} prestige values and
+#'  returns them invisibly.
+#'
 #' @export
 #' @seealso [L1centLOC()], [L1centNB()], [L1centMDS()], [L1centEDGE()],
-#'   [L1centGROUP()], [Lorenz_plot()] for
+#'   [L1centGROUP()] for
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality- or
 #'   prestige-based analysis. See [L1centrality-package] for each function's
 #'   support range.
 #'
 #'   [igraph::betweenness()], [igraph::closeness()],
 #'   [igraph::degree()], [igraph::eigen_centrality()] for centrality measures.
+#'
+#'   [Summary] for a relevant summary method and [Heterogeneity] for drawing the
+#'   Lorenz curve and computing the Gini coefficient.
+#'
 #' @examples
 #' # igraph object and distance matrix as an input lead to the same result
 #' vertex_weight <- igraph::V(MCUmovie)$worldwidegross
@@ -159,61 +169,27 @@ L1cent.matrix <- function(g, eta = NULL, mode = c("centrality", "prestige")) {
     res <- rep(1, n) - sg / sum(eta) *
       apply((geta1 - t(geta1)) / (t(g) + diag(rep(Inf, n))), 1,
             function(r) max(c(r, 0)))
-    pmin(pmax(res,0),1)
+    l1 <- pmin(pmax(res,0),1)
   }else{ # prestige
     geta2 <- matrix(rep(colSums(g * eta), n), ncol = n)
     res <- rep(1, n) - sg / sum(eta) *
       apply((geta2 - t(geta2)) / (g + diag(rep(Inf, n))), 1,
             function(r) max(c(r, 0)))
-    pmin(pmax(res,0),1)
+    l1 <- pmin(pmax(res,0),1)
   }
+  structure(l1, class = "L1cent", mode = mode)
 }
 
-
-#' @title Lorenz Curve and the Gini Coefficient
+#' @name L1cent
+#' @aliases print.L1cent
 #'
-#' @description
-#' Draws a Lorenz curve (the group heterogeneity plot) and computes the Gini
-#' coefficient (the group heterogeneity index).
-#'
-#' @param x A numeric vector.
-#' @param add A logical value.
-#'  * \code{TRUE}: add the Lorenz curve to an already existing plot.
-#'  * \code{FALSE} (the default): draw the Lorenz curve to a new graphic device.
-#' @param ... Further graphical parameters supplied to the internal
-#'   [base::plot()] (when \code{add = FALSE}) or [graphics::lines()] (when
-#'   \code{add = TRUE}) function. See [graphics::par()] document.
-#' @return Draws a Lorenz curve (the group heterogeneity plot) and returns an
-#'   invisible copy of a Gini coefficient (the group heterogeneity index).
-#'
+#' @param x An \code{L1cent} object, obtained as a result of the function
+#'   \code{L1cent()}.
+#' @param ... Further arguments passed to or from other methods. This argument
+#'   is ignored here.
 #' @export
-#' @seealso Use the function with [L1cent()] or [L1centLOC()], and compare
-#'   distributions of the centrality measurements across several groups and
-#'   graphs.
-#'
-#' @examples
-#' vertex_weight <- igraph::V(MCUmovie)$worldwidegross
-#' cent <- L1cent(MCUmovie, eta=vertex_weight)
-#' gini <- Lorenz_plot(cent, asp=1)
-#' graphics::abline(0,1,lty=2)
-#' # group heterogeneity index
-#' gini
-#' @references S. Kang and H.-S. Oh. On a notion of graph centrality based on
-#'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-#'   \emph{arXiv preprint arXiv:2404.13233}, 2024.
-#'
-#'   M. O. Lorenz. Methods of measuring the concentration of wealth.
-#'   \emph{Publications of the American Statistical Association}, 9(70):209--219, 1905.
-Lorenz_plot <- function(x, add = FALSE, ...){
-  x <- sort(x)
-  mu <- mean(x)
-  n <- length(x)
-  Fx <- c(0,seq(1/n, 1, length.out = n))
-  Deltax <- c(0,1/mu*cumsum(x)/n)
-  if(!add){
-    plot(Fx, Deltax, type="l", xlab="p",ylab="L(p)", ...)
-  }else{
-    graphics::lines(Fx, Deltax, ...)
-  }
-  invisible(unname(1 - 2*(Fx[2])*(sum(Deltax)-1/2))) # Gini index
+print.L1cent <- function(x, ...){
+  cat("L1 ", attr(x, "mode"), ":\n", sep = "")
+  print.default(c(x))
+  return(invisible(x))
 }
