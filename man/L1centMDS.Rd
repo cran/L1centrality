@@ -8,11 +8,23 @@
 \alias{print.L1centMDS}
 \title{Fitting a Target Plot}
 \usage{
-L1centMDS(g, tol, maxiter, verbose)
+L1centMDS(g, tol, maxiter, verbose, weight_transform)
 
-\method{L1centMDS}{igraph}(g, tol = 1e-05, maxiter = 1000, verbose = TRUE)
+\method{L1centMDS}{igraph}(
+  g,
+  tol = 1e-05,
+  maxiter = 1000,
+  verbose = TRUE,
+  weight_transform = NULL
+)
 
-\method{L1centMDS}{matrix}(g, tol = 1e-05, maxiter = 1000, verbose = TRUE)
+\method{L1centMDS}{matrix}(
+  g,
+  tol = 1e-05,
+  maxiter = 1000,
+  verbose = TRUE,
+  weight_transform = NULL
+)
 
 \method{plot}{L1centMDS}(x, zoom = 1, main = NULL, ...)
 
@@ -38,6 +50,10 @@ to the console. At the end, the final message is printed to the console; total
 number of iterations and final stress.
 \item \code{FALSE}: suppress message to the console.
 }}
+
+\item{weight_transform}{An optional function to transform the edge weights
+when \code{g} is an \code{igraph} object and an edge weight attribute exists. This
+argument is ignored when \code{g} is a distance matrix.}
 
 \item{x}{An \code{L1centMDS} object, obtained as a result of the function
 \code{L1centMDS()}.}
@@ -85,7 +101,7 @@ are shown in red text. Note that red texts denote the
 target plot, which is a target-shaped 2D plot that aids in the visual
 inspection of an undirected graph using the
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} centrality. See Kang
-and Oh (2024) for a formal definition of a target plot.
+and Oh (2025) for a formal definition of a target plot.
 }
 \details{
 Denoting the \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}}
@@ -110,7 +126,7 @@ plot(parameters)
 \references{
 S. Kang and H.-S. Oh. On a notion of graph centrality based on
 \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-\emph{arXiv preprint arXiv:2404.13233}, 2024.
+\emph{Journal of the American Statistical Association}, 1--13, 2025a.
 
 J. B. Kruskal. Multidimensional scaling by optimizing goodness of fit to a
 nonmetric hypothesis. \emph{Psychometrika}, 29(1):1--27, 1964a.

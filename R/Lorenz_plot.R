@@ -18,21 +18,22 @@
 #'   `Gini()` returns a Gini coefficient.
 #'
 #' @export
-#' @seealso Use the function with [L1cent()] or [L1centLOC()], and compare
-#'   distributions of the centrality measurements across several groups and
-#'   graphs. [Summary] methods in this package come with the Gini coefficient.
+#' @seealso \code{plot()} methods for objects of class [L1cent] and [L1centLOC]
+#'   support plotting a Lorenz curve. \code{summary()} methods for objects of
+#'   class [L1cent], [L1centLOC], and [L1centNB] provide the Gini coefficient as
+#'   one of the summary statistics.
 #'
 #' @examples
 #' vertex_weight <- igraph::V(MCUmovie)$worldwidegross
-#' cent <- L1cent(MCUmovie, eta=vertex_weight)
-#' gini <- Lorenz_plot(cent, asp=1)
-#' graphics::abline(0,1,lty=2)
+#' cent <- L1cent(MCUmovie, eta = vertex_weight)
+#' gini <- Lorenz_plot(cent, asp = 1) # one can use "plot(cent, asp = 1)"
+#' graphics::abline(0, 1, lty = 2)
 #' # group heterogeneity index
 #' gini
 #' gini == Gini(cent)
 #' @references S. Kang and H.-S. Oh. On a notion of graph centrality based on
 #'   \ifelse{html}{\out{<i>L</i><sub>1</sub>}}{{\eqn{L_1}}} data depth.
-#'   \emph{arXiv preprint arXiv:2404.13233}, 2024.
+#'   \emph{Journal of the American Statistical Association}, 1--13, 2025.
 #'
 #'   M. O. Lorenz. Methods of measuring the concentration of wealth.
 #'   \emph{Publications of the American Statistical Association}, 9(70):209--219, 1905.
@@ -43,7 +44,7 @@ Lorenz_plot <- function(x, add = FALSE, ...){
   Fx <- c(0,seq(1/n, 1, length.out = n))
   Deltax <- c(0,1/mu*cumsum(x)/n)
   if(!add){
-    plot(Fx, Deltax, type="l", xlab="p",ylab="L(p)", ...)
+    plot(Fx, Deltax, type="l", xlab="p", ylab="L(p)", ...)
   }else{
     graphics::lines(Fx, Deltax, ...)
   }
