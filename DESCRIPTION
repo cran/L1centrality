@@ -1,6 +1,6 @@
 Package: L1centrality
 Title: Graph/Network Analysis Based on L1 Centrality
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: c(
   person("Seungwoo", "Kang", email = "kangsw@skku.edu", role = c("aut", "cre"), 
   comment=c(ORCID="0000-0001-8082-0794")),
@@ -17,10 +17,10 @@ Imports: doParallel, foreach, graphics, igraph, methods, parallel,
         Rcpp, stats, utils, withr
 LinkingTo: Rcpp
 NeedsCompilation: yes
-Packaged: 2026-04-28 14:01:12 UTC; SeungwooKang
+Packaged: 2026-05-04 12:53:47 UTC; SeungwooKang
 Author: Seungwoo Kang [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-8082-0794>),
   Hee-Seok Oh [aut]
 Maintainer: Seungwoo Kang <kangsw@skku.edu>
 Repository: CRAN
-Date/Publication: 2026-04-29 09:10:19 UTC
+Date/Publication: 2026-05-04 14:50:07 UTC
